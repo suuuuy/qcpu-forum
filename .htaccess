@@ -1,0 +1,78 @@
+#<IfModule mod_rewrite.c>
+#        RewriteEngine On
+#        RewriteBase /
+#
+#        # Removes index.php from ExpressionEngine URLs
+#        RewriteCond %{THE_REQUEST} ^GET.*index\.php [NC]
+#        RewriteCond %{REQUEST_URI} !/system/.* [NC]
+#        RewriteRule (.*?)index\.php/*(.*) /$1$2 [R=301,NE,L]
+#
+#        # Directs all EE web requests through the site index file
+#        RewriteCond %{REQUEST_FILENAME} !-f
+#        RewriteCond %{REQUEST_FILENAME} !-d
+#        RewriteRule ^(.*)$ /index.php/$1 [L]
+#</IfModule>
+
+#RewriteEngine on
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteCond $1 !^(index\.php|css|js|images|robots\.txt)
+#RewriteRule ^(.*)$ index.php?$1 [L]
+
+#DirectoryIndex index.php
+#RewriteEngine on
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteRule ^(.*)$ ./index.php/$1 [L,QSA]
+
+<IfModule mod_rewrite.c>
+
+    RewriteEngine On
+    Options +FollowSymLinks
+    #RewriteBase /
+
+    ### Canonicalize codeigniter URLs
+
+    # If your default controller is something other than
+    # "welcome" you should probably change this
+    RewriteRule ^(welcome(/index)?|index.php?)/?$ / [L,R=301]
+    RewriteRule ^(.*)/index/?$ $1 [L,R=301]
+
+    # Removes trailing slashes (prevents SEO duplicate content issues)
+	RewriteCond %{HTTP_HOST} ^(www.)brighterfutures.com.ph [NC]
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.+)/$ $1 [L,R=301]
+
+    # Enforce www
+    # If you have subdomains, you can add them to
+    # the list using the "|" (OR) regex operator
+    RewriteCond %{HTTP_HOST} ^brighterfutures.com.ph [NC]
+    RewriteCond %{HTTP_HOST} !^(www|brighterfutures) [NC]
+    RewriteRule ^(.*)$ http://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Enforce NO www
+    #RewriteCond %{HTTP_HOST} ^www [NC]
+    #RewriteRule ^(.*)$ http://www.medix.ph [L,R=301]
+
+    # Removes access to the system folder by users.
+    # Additionally this will allow you to create a System.php controller,
+    # previously this would not have been possible.
+    # 'system' can be replaced if you have renamed your system folder.
+    RewriteCond %{REQUEST_URI} ^system.*
+    RewriteRule ^(.*)$ index.php/$1 [L]
+
+    # Checks to see if the user is attempting to access a valid file,
+    # such as an image or css document, if this isn't true it sends the
+    # request to index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php/$1 [L]
+
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+
+    # Without mod_rewrite, route 404's to the front controller
+    ErrorDocument 404 /index.php
+
+</IfModule>
