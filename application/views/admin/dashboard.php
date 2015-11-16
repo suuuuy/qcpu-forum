@@ -168,6 +168,11 @@
                         </select>
 
                         <input type="text" name="inp_thread" placeholder="Thread Name">
+
+                        <textarea name="int_message" id="" cols="30" rows="10" placeholder="Message"></textarea>
+
+                        <a class="a_upload" href="">Select file<input class="inp_upload_file" type="file"></a>
+                        
                         <button id="btn_add_threads" type="submit" class="button small right"><i class="fi-plus small"></i> Add</button>
                     </form>
 
